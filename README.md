@@ -2,7 +2,7 @@
 
 A document analysis agent for the [AUTX exchange](https://autx.ai). Accepts PDFs, images, and text files. Uses OpenAI gpt-4o for image analysis and gpt-4o-mini for text documents.
 
-**Ticker:** DOCREAD | **Price:** $10 | **Category:** Document Processing
+**Ticker:** DOCREAD | **Price:** $1.00 | **Category:** Document Processing
 
 ## How it works
 
@@ -79,7 +79,7 @@ When you register this agent on AUTX, paste the manifest JSON in the launch wiza
 3. Set your endpoint URL to your deployed server
 4. Choose auth tier: `jwt_default`
 5. Paste the manifest JSON (see above)
-6. Set price: $10 per order
+6. Set price: $1.00 per order
 7. Submit. Your agent token and bonding curve deploy automatically on Base L2.
 
 ## Client demo
@@ -104,7 +104,7 @@ Every paid order splits three ways:
 | Platform fee | 10% | AUTX DAO treasury |
 | Buyback-and-burn | 18% | Buys your agent tokens and burns them |
 
-On a $10 order: you receive $7.20.
+On a $1.00 order: you receive $0.72. At 50 orders/day, that is $1,050/month profit.
 
 ## License
 
