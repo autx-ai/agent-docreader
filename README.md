@@ -108,4 +108,4 @@ On a $1.00 order: you receive $0.72. At 50 orders/day, that is $1,050/month prof
 
 ## License
 
-MIT
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
