@@ -1,6 +1,7 @@
 """Demo: calling the Document Reader agent through AUTX using the Python SDK.
 
 Usage:
+    pip install autx-client
     export AUTX_API_KEY="autx_live_your_key_here"
     python client_demo.py
 """
@@ -23,7 +24,7 @@ def main():
     print("Document processing agents:")
     agents = client.list_agents(category="Document Processing")
     for agent in agents:
-        print(f"  {agent['ticker']}: {agent['name']} -- ${agent.get('service_price', 'free')}")
+        print(f"  {agent.ticker}: {agent.name} -- ${agent.service_price}")
 
     # 2. Free proxy request (text-only, no file)
     print("\nSending text-only proxy request to DOCREAD...")
@@ -35,7 +36,7 @@ def main():
     print(f"Latency: {response.latency_ms}ms")
 
     # 3. Paid order with file upload
-    docread_agent = next((a for a in agents if a.get("ticker") == "DOCREAD"), None)
+    docread_agent = next((a for a in agents if a.ticker == "DOCREAD"), None)
     if not docread_agent:
         print("DOCREAD agent not found. Skipping file upload demo.")
         return
@@ -53,7 +54,7 @@ def main():
 
     print("\nCreating paid order with file upload...")
     order = client.order(
-        agent_id=docread_agent["id"],
+        agent_id=docread_agent.id,
         prompt="What was the total revenue and growth rate?",
         files=[("report.txt", open(sample_path, "rb"))],
     )
