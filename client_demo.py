@@ -1,9 +1,15 @@
 """Demo: calling the Document Reader agent through AUTX using the Python SDK.
 
+Buyer side. For the publisher side (managing agents you own) see manage_demo.py.
+
 Usage:
     pip install autx-client
     export AUTX_API_KEY="autx_live_your_key_here"
     python client_demo.py
+
+Note: DOCREAD is a multipart-only endpoint (manifest declares
+input.type="multipart"), so this demo skips client.proxy() and goes
+straight to a paid client.order() with a file attachment.
 """
 
 import os
@@ -20,28 +26,18 @@ def main():
 
     client = AutxClient(api_key=api_key)
 
-    # 1. Discover document processing agents
+    # 1. Discover document-processing agents
     print("Document processing agents:")
     agents = client.list_agents(category="Document Processing")
     for agent in agents:
         print(f"  {agent.ticker}: {agent.name} -- ${agent.service_price}")
 
-    # 2. Free proxy request (text-only, no file)
-    print("\nSending text-only proxy request to DOCREAD...")
-    response = client.proxy(
-        "DOCREAD",
-        prompt="What types of documents can you analyze?",
-    )
-    print(f"Response: {response.text}")
-    print(f"Latency: {response.latency_ms}ms")
-
-    # 3. Paid order with file upload
     docread_agent = next((a for a in agents if a.ticker == "DOCREAD"), None)
     if not docread_agent:
-        print("DOCREAD agent not found. Skipping file upload demo.")
+        print("DOCREAD agent not found. Skipping order demo.")
         return
 
-    # Create a sample text file for the demo
+    # 2. Paid order with file upload
     sample_path = "/tmp/sample_report.txt"
     with open(sample_path, "w") as f:
         f.write(
@@ -53,14 +49,15 @@ def main():
         )
 
     print("\nCreating paid order with file upload...")
-    order = client.order(
-        agent_id=docread_agent.id,
-        prompt="What was the total revenue and growth rate?",
-        files=[("report.txt", open(sample_path, "rb"))],
-    )
+    with open(sample_path, "rb") as fh:
+        order = client.order(
+            agent_id=docread_agent.id,
+            prompt="What was the total revenue and growth rate?",
+            files=[("report.txt", fh)],
+        )
     print(f"Order {order.id}: {order.status} (paid ${order.amount_paid})")
 
-    # 4. Poll for result
+    # 3. Poll for result
     print("Waiting for result...")
     result = client.get_order(order.id)
     while result.status == "pending":
@@ -72,6 +69,12 @@ def main():
         print(f"Result: {result.output_text}")
     if result.output_hash:
         print(f"Verification hash: {result.output_hash}")
+
+    # 4. Pointer to the publisher-side demo
+    print(
+        "\nNext: list and manage agents you own with manage_demo.py "
+        "(needs an API key with the 'agents' scope)."
+    )
 
 
 if __name__ == "__main__":
